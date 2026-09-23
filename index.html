@@ -109,7 +109,8 @@
   .row-item { display:flex; align-items:center; justify-content:space-between; gap:12px; background:var(--surface);
     border:1px solid var(--line); border-radius:13px; padding:13px 15px; margin-bottom:9px; }
   .row-item .r-name { font-weight:600; font-size:14.5px; } .row-item .r-sub { font-size:12px; color:var(--muted); font-weight:500; margin-top:1px; }
-  .r-actions { display:flex; align-items:center; gap:7px; flex-wrap:wrap; justify-content:flex-end; }
+  .r-actions { display:flex; flex-direction:column; align-items:flex-end; gap:8px; flex:none; }
+  .r-btns { display:flex; gap:7px; flex-wrap:wrap; justify-content:flex-end; }
   .chip { font-size:11px; font-weight:700; padding:4px 9px; border-radius:7px; white-space:nowrap; }
   .chip.active { background:var(--accent-soft); color:var(--accent-strong); }
   .chip.pending { background:var(--warn-bg); color:var(--warn-fg); }
@@ -517,7 +518,7 @@ async function renderDashBody(){
       <div class="note">Add what you sell. Description and price only for now.</div>
       <div id="prodList">${prods.length ? prods.map(p=>`
         <div class="row-item"><div><div class="r-name">${esc(p.description)}</div><div class="r-sub">${esc(money(p.price))}</div></div>
-        <div class="r-actions"><button class="mini" data-edit="${p.id}">Edit</button><button class="mini" data-del="${p.id}">Remove</button></div></div>`).join("") : `<div class="empty">No products yet. Add your first below.</div>`}</div>
+        <div class="r-actions"><div class="r-btns"><button class="mini" data-edit="${p.id}">Edit</button><button class="mini" data-del="${p.id}">Remove</button></div></div></div>`).join("") : `<div class="empty">No products yet. Add your first below.</div>`}</div>
       <div class="section-label">Add a product</div>
       <div class="two"><div class="field" style="margin-bottom:8px"><input id="p_desc" placeholder="Description"></div><div class="field" style="margin-bottom:8px"><input id="p_price" type="number" inputmode="decimal" placeholder="Price (R)"></div></div>
       <button class="btn secondary" id="addProd">Add product</button>`;
@@ -616,9 +617,11 @@ async function renderAdminBody(){
           <div class="r-sub">${s.paid_until?("Paid until "+esc(fmtDate(s.paid_until))):"No paid date"}${s.plan?" · "+esc(s.plan):""}</div>
         </div><div class="r-actions">
           <span class="chip ${f.cls}">${esc(f.label)}</span>
-          <button class="mini" data-renew-m="${s.id}">+Month</button>
-          <button class="mini" data-renew-y="${s.id}">+Year</button>
-          <button class="mini ${s.status==='active'?'':'go'}" data-toggle="${s.id}" data-st="${s.status}">${s.status==='active'?'Pause':'Activate'}</button>
+          <div class="r-btns">
+            <button class="mini" data-renew-m="${s.id}">+Month</button>
+            <button class="mini" data-renew-y="${s.id}">+Year</button>
+            <button class="mini ${s.status==='active'?'':'go'}" data-toggle="${s.id}" data-st="${s.status}">${s.status==='active'?'Pause':'Activate'}</button>
+          </div>
         </div></div>`;
       }).join("") : `<div class="empty">No stalls yet.</div>`;
       const renew = async (id, kind) => {
@@ -645,8 +648,10 @@ async function renderAdminBody(){
           <div class="r-sub">${m.town?esc(m.town)+" · ":""}${(m.market_dates||[]).length} date(s)${m.status==='pending'?" · suggested":""}</div>
         </div><div class="r-actions">
           <span class="chip ${m.status==='approved'?'active':'pending'}">${esc(m.status)}</span>
-          ${m.status==='pending'?`<button class="mini go" data-appr="${m.id}">Approve</button>`:""}
-          <button class="mini" data-adddate="${m.id}">+Date</button>
+          <div class="r-btns">
+            ${m.status==='pending'?`<button class="mini go" data-appr="${m.id}">Approve</button>`:""}
+            <button class="mini" data-adddate="${m.id}">+Date</button>
+          </div>
         </div></div>`).join("") : `<div class="empty">No markets yet. Add one below.</div>`}</div>
         <div class="section-label">Add a market</div>
         <div class="field" style="margin-bottom:8px"><input id="am_name" placeholder="Market name"></div>
@@ -677,7 +682,7 @@ async function renderAdminBody(){
       state.categories = cats || [];
       body.innerHTML = `<div class="note">Add sparingly, so shoppers searching one word find every matching stall.</div>
         ${(cats||[]).map(c => `<div class="row-item"><div class="r-name">${esc(c.name)}</div>
-          <div class="r-actions"><button class="mini" data-ren="${c.id}" data-nm="${esc(c.name)}">Rename</button></div></div>`).join("")}
+          <div class="r-actions"><div class="r-btns"><button class="mini" data-ren="${c.id}" data-nm="${esc(c.name)}">Rename</button></div></div></div>`).join("")}
         <div class="section-label">Add a category</div>
         <div class="field" style="margin-bottom:8px"><input id="c_name" placeholder="New category name"></div>
         <button class="btn secondary" id="addCat">Add category</button>`;
